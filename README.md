@@ -4,6 +4,8 @@ Implement exactly the screenshot and nothing else
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://frugal-web-studio.lovable.app
+
 ## Build with Lovable
 
 Continue developing this project in the [Lovable editor](https://lovable.dev/projects/8118b6d6-978d-4b8a-a8a7-85b6b4c88440).

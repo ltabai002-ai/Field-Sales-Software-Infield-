@@ -16,6 +16,16 @@ import { Footer } from "../components/infield/Footer";
 import { FloatingElements } from "../components/infield/FloatingElements";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "A Fresh Start" },
+      { name: "description", content: "A simple page for a fresh start." },
+      { property: "og:title", content: "A Fresh Start" },
+      { property: "og:description", content: "A simple page for a fresh start." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Index,
 });
 
