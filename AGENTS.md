@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep the home page as a single self-contained welcome page with no backend or extra routes, because the requested experience is intentionally simple.
