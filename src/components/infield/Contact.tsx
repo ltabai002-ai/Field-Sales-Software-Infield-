@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Reveal, PHONE, WA_BASE } from "./primitives";
 import { supabase } from "../../integrations/supabase/client";
-import { Phone, MessageSquare, Mail } from "lucide-react";
+import { Phone, MessageSquare, User, Building2, MapPin, Calendar, Clock, Users } from "lucide-react";
 
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw5TnrtQ8-lGZfOE5zl_3lPpc2-foy-vDNlTFhmnzmNg1Uf37sy8FfzchTQMmgAYHR7/exec";
 
@@ -19,10 +19,15 @@ export function Contact() {
       company: formData.get("company") as string,
       phone: formData.get("phone") as string,
       team_size: formData.get("team_size") as string,
+      city: formData.get("city") as string,
+      location: formData.get("location") as string,
+      preferred_date: formData.get("preferred_date") as string,
+      preferred_time: formData.get("preferred_time") as string,
+      message: formData.get("message") as string,
     };
 
     try {
-      // Send to Google Sheets
+      // Send to Google Sheets (matching Questionnaire payload structure)
       if (GOOGLE_SHEET_URL) {
         fetch(GOOGLE_SHEET_URL, {
           method: "POST",
@@ -33,19 +38,29 @@ export function Contact() {
             phone: data.phone,
             businessName: data.company,
             teamSize: data.team_size,
-            role: "Website Contact Form",
+            city: data.city,
+            location: data.location,
+            preferredDate: data.preferred_date,
+            preferredTime: data.preferred_time,
+            message: data.message,
+            role: "Website Appointment Form",
             submittedAt: new Date().toISOString(),
           }),
         }).catch((err) => console.error("Error sending contact form to Google Sheets:", err));
       }
 
-      const { error } = await supabase.from("demo_requests").insert(data);
-      if (error) throw error;
+      const { error } = await supabase.from("demo_requests").insert({
+        name: data.name,
+        company: data.company,
+        phone: data.phone,
+        team_size: data.team_size,
+      });
+      if (error) console.error("Supabase insert error:", error);
       
-      toast.success("Demo request sent successfully! We'll contact you soon.");
+      toast.success("Appointment request sent successfully! We'll contact you soon.");
       (e.target as HTMLFormElement).reset();
     } catch (error) {
-      console.error("Error submitting demo request:", error);
+      console.error("Error submitting appointment request:", error);
       toast.error("Failed to send request. Please try again or call us.");
     } finally {
       setIsSubmitting(false);
@@ -74,7 +89,7 @@ export function Contact() {
               <div className="my-6 h-1 w-24 bg-brand" />
 
               <p className="mt-4 text-lg text-gray-300">
-                Book online in 60 seconds. Same-day setup available.
+                Book an appointment online in 60 seconds. Same-day setup available.
               </p>
 
               <ul className="mt-8 space-y-3">
@@ -122,54 +137,142 @@ export function Contact() {
             </div>
           </Reveal>
 
-          {/* Right: Form */}
+          {/* Right: Form (Identical fields to Questionnaire Appointment Form) */}
           <Reveal delay={0.2} className="flex items-center">
-            <div className="w-full">
-              <form onSubmit={handleSubmit} className="grid gap-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <input 
-                    id="name" 
-                    name="name" 
-                    required 
-                    placeholder="Full Name" 
-                    className="min-h-[56px] rounded border border-[#333] bg-[#222] px-4 text-white placeholder-gray-500 focus:border-brand focus:outline-none" 
-                  />
-                  <input 
-                    id="phone" 
-                    name="phone" 
-                    type="tel" 
-                    required 
-                    placeholder="Phone Number" 
-                    className="min-h-[56px] rounded border border-[#333] bg-[#222] px-4 text-white placeholder-gray-500 focus:border-brand focus:outline-none" 
-                  />
+            <div className="w-full bg-[#1a1a1a]/90 border border-white/10 p-6 sm:p-8 rounded-2xl shadow-xl backdrop-blur-md">
+              <h3 className="text-xl font-bold text-white mb-1">Book an Appointment</h3>
+              <p className="text-xs text-gray-400 mb-6">Schedule a personalized demo & live consultation with our product team.</p>
+
+              <form onSubmit={handleSubmit} className="grid gap-3.5">
+                <div className="grid gap-3.5 sm:grid-cols-2">
+                  {/* Full Name */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">Your Full Name *</label>
+                    <input 
+                      id="name" 
+                      name="name" 
+                      required 
+                      placeholder="John Doe" 
+                      className="w-full min-h-[48px] rounded border border-[#333] bg-[#222] px-4 text-base sm:text-sm text-white placeholder-gray-500 focus:border-brand focus:outline-none" 
+                    />
+                  </div>
+
+                  {/* Phone Number */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">Phone Number *</label>
+                    <input 
+                      id="phone" 
+                      name="phone" 
+                      type="tel" 
+                      required 
+                      placeholder="+91 98765 43210" 
+                      className="w-full min-h-[48px] rounded border border-[#333] bg-[#222] px-4 text-base sm:text-sm text-white placeholder-gray-500 focus:border-brand focus:outline-none" 
+                    />
+                  </div>
                 </div>
 
-                <input 
-                  id="company" 
-                  name="company" 
-                  required 
-                  placeholder="Company Name" 
-                  className="min-h-[56px] rounded border border-[#333] bg-[#222] px-4 text-white placeholder-gray-500 focus:border-brand focus:outline-none" 
-                />
+                <div className="grid gap-3.5 sm:grid-cols-2">
+                  {/* Company Name */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">Company / Business Name *</label>
+                    <input 
+                      id="company" 
+                      name="company" 
+                      required 
+                      placeholder="Acme Sales / Global Corp" 
+                      className="w-full min-h-[48px] rounded border border-[#333] bg-[#222] px-4 text-base sm:text-sm text-white placeholder-gray-500 focus:border-brand focus:outline-none" 
+                    />
+                  </div>
 
-                <select 
-                  id="team_size" 
-                  name="team_size" 
-                  required 
-                  className="min-h-[56px] rounded border border-[#333] bg-[#222] px-4 text-white focus:border-brand focus:outline-none appearance-none"
-                >
-                  <option value="" disabled selected>Select Team Size</option>
-                  <option value="1-10">1 - 10 Reps</option>
-                  <option value="11-50">11 - 50 Reps</option>
-                  <option value="50+">50+ Reps</option>
-                </select>
+                  {/* Number of Teams / Sales Reps */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">Number of Teams / Sales Reps *</label>
+                    <select 
+                      id="team_size" 
+                      name="team_size" 
+                      required 
+                      defaultValue=""
+                      className="w-full min-h-[48px] rounded border border-[#333] bg-[#222] px-4 text-base sm:text-sm text-white focus:border-brand focus:outline-none appearance-none"
+                    >
+                      <option value="" disabled>Select Number of Teams / Reps</option>
+                      <option value="1-5 Reps">1 - 5 Reps (1 Team)</option>
+                      <option value="6-20 Reps">6 - 20 Reps (2-4 Teams)</option>
+                      <option value="21-50 Reps">21 - 50 Reps (5+ Teams)</option>
+                      <option value="50+ Reps">50+ Reps (Enterprise)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid gap-3.5 sm:grid-cols-2">
+                  {/* City */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">City *</label>
+                    <input 
+                      id="city" 
+                      name="city" 
+                      required 
+                      placeholder="Mumbai / Delhi / Bengaluru" 
+                      className="w-full min-h-[48px] rounded border border-[#333] bg-[#222] px-4 text-base sm:text-sm text-white placeholder-gray-500 focus:border-brand focus:outline-none" 
+                    />
+                  </div>
+
+                  {/* Location / Detailed Address */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">Location / Detailed Address *</label>
+                    <input 
+                      id="location" 
+                      name="location" 
+                      required 
+                      placeholder="Office Suite, Commercial Plaza, Sector 18" 
+                      className="w-full min-h-[48px] rounded border border-[#333] bg-[#222] px-4 text-base sm:text-sm text-white placeholder-gray-500 focus:border-brand focus:outline-none" 
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-3.5 sm:grid-cols-2">
+                  {/* Preferred Date */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">Preferred Date *</label>
+                    <input 
+                      id="preferred_date" 
+                      name="preferred_date" 
+                      type="date"
+                      required 
+                      className="w-full min-h-[48px] rounded border border-[#333] bg-[#222] px-4 text-base sm:text-sm text-white focus:border-brand focus:outline-none [color-scheme:dark]" 
+                    />
+                  </div>
+
+                  {/* Preferred Time */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">Preferred Time *</label>
+                    <input 
+                      id="preferred_time" 
+                      name="preferred_time" 
+                      type="time"
+                      required 
+                      className="w-full min-h-[48px] rounded border border-[#333] bg-[#222] px-4 text-base sm:text-sm text-white focus:border-brand focus:outline-none [color-scheme:dark]" 
+                    />
+                  </div>
+                </div>
+
+                {/* Message / Additional Requirements */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">Message / Requirements</label>
+                  <textarea 
+                    id="message" 
+                    name="message" 
+                    rows={2}
+                    placeholder="Tell us about your team or specific requirements..." 
+                    className="w-full rounded border border-[#333] bg-[#222] p-3 text-base sm:text-sm text-white placeholder-gray-500 focus:border-brand focus:outline-none resize-none" 
+                  />
+                </div>
 
                 <button 
                   type="submit" 
                   disabled={isSubmitting} 
-                  className="mt-2 w-full bg-brand hover:bg-brand-dark min-h-[64px] text-lg font-bold text-white uppercase tracking-wider rounded transition-colors"
+                  className="mt-2 w-full bg-brand hover:bg-brand-dark min-h-[54px] text-base font-bold text-white uppercase tracking-wider rounded transition-colors shadow-lg shadow-brand/20 disabled:opacity-50"
                 >
-                  {isSubmitting ? "Submitting..." : "Book My Demo"}
+                  {isSubmitting ? "Submitting..." : "Book an Appointment"}
                 </button>
               </form>
             </div>
