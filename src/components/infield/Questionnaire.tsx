@@ -20,12 +20,15 @@ import {
   Briefcase,
   Users,
   FileCheck,
-  Sparkles
+  Sparkles,
+  AlertTriangle,
+  FileText,
+  HelpCircle
 } from "lucide-react";
 
 // ============================================================================
 // 📊 GOOGLE SHEETS INTEGRATION
-// Paste your Google Apps Script Web App URL below to send submissions to Google Sheets!
+// Submissions automatically post to your Google Apps Script Web App URL!
 // ============================================================================
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw5TnrtQ8-lGZfOE5zl_3lPpc2-foy-vDNlTFhmnzmNg1Uf37sy8FfzchTQMmgAYHR7/exec";
 
@@ -36,7 +39,7 @@ interface QuestionnaireProps {
 export function Questionnaire({ onComplete }: QuestionnaireProps) {
   const [step, setStep] = useState<number>(1);
   const [selectedRole, setSelectedRole] = useState<string>("");
-  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+  const [selectedChallenges, setSelectedChallenges] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
@@ -62,23 +65,23 @@ export function Questionnaire({ onComplete }: QuestionnaireProps) {
     { id: "exploring_other", label: "Exploring Solutions / Other", desc: "Looking for team tracking & sales automation tools", icon: Sparkles },
   ];
 
-  // Universal Feature Options
-  const features = [
-    { id: "gps_tracking", label: "Live GPS Team Location Tracking", desc: "See your entire field team live on one map in real-time", icon: Navigation },
-    { id: "client_checkin", label: "GPS-Verified Timestamped Client Check-Ins", desc: "Verify visits only at real client locations with notes & photos", icon: Check },
-    { id: "route_planning", label: "Smart Route Optimization & Fuel Reduction", desc: "Optimize daily travel routes to cut fuel bills and save travel hours", icon: MapPin },
-    { id: "auto_incentives", label: "Automatic Salary, Commission & Travel Calculation", desc: "Auto-calculate incentives and travel allowances with zero manual sheets", icon: Calculator },
-    { id: "geofence_alerts", label: "Territory Geofencing & Out-of-Bound Alerts", desc: "Get instant alerts if a rep leaves assigned zone for 30+ minutes", icon: ShieldAlert },
-    { id: "perf_dashboard", label: "Live Performance Dashboard & Leaderboards", desc: "Track visits, meetings, deals closed and revenue per representative", icon: BarChart3 },
-    { id: "visit_notes", label: "Digital Daily Visit Notes & Photo Reporting", desc: "Capture client meeting summaries, proof photos, and orders on the go", icon: FileCheck },
-    { id: "visit_scheduling", label: "Client Meeting & Route Scheduling", desc: "Plan daily schedules and automate recurring client visit reminders", icon: CalendarCheck },
+  // Universal Operational Challenges Options
+  const challenges = [
+    { id: "no_visibility", label: "No Visibility on Live Team Location", desc: "Unsure where field reps are during working hours", icon: Navigation },
+    { id: "fake_reports", label: "Unverifiable Client Visit Reports", desc: "Can't confirm if reps actually met the client/doctor at their real location", icon: AlertTriangle },
+    { id: "high_fuel", label: "High Fuel Bills & Inefficient Travel Routes", desc: "Random unoptimized routes wasting petrol, time, and travel expenses", icon: MapPin },
+    { id: "manual_commissions", label: "Manual Incentive & Salary Spreadsheet Disputes", desc: "Wasting hours on commission calculations and manual expense claims", icon: Calculator },
+    { id: "territory_breach", label: "Unapproved Territory Exits", desc: "Reps leaving assigned sales zones without prior notice", icon: ShieldAlert },
+    { id: "no_sales_data", label: "Lack of Real-Time Sales Performance Data", desc: "No clear live view of daily meetings, deals closed, and team leaderboard", icon: BarChart3 },
+    { id: "delayed_notes", label: "Delayed Meeting Notes & Proof Photos", desc: "Visit summaries, orders, and customer feedback not reported on time", icon: FileText },
+    { id: "irregular_visits", label: "Irregular Client Meeting Schedules", desc: "Difficulty maintaining consistent meeting frequency with key clients", icon: CalendarCheck },
   ];
 
-  const toggleFeature = (id: string) => {
-    if (selectedFeatures.includes(id)) {
-      setSelectedFeatures(selectedFeatures.filter((item) => item !== id));
+  const toggleChallenge = (id: string) => {
+    if (selectedChallenges.includes(id)) {
+      setSelectedChallenges(selectedChallenges.filter((item) => item !== id));
     } else {
-      setSelectedFeatures([...selectedFeatures, id]);
+      setSelectedChallenges([...selectedChallenges, id]);
     }
   };
 
@@ -93,12 +96,13 @@ export function Questionnaire({ onComplete }: QuestionnaireProps) {
 
     const payload = {
       role: selectedRole,
-      selectedFeatures: selectedFeatures,
+      selectedChallenges: selectedChallenges,
+      selectedFeatures: selectedChallenges, // for backward compatibility with sheet headers
       ...formData,
       submittedAt: new Date().toISOString(),
     };
 
-    // Send to Google Sheets if Web App URL is provided
+    // Send to Google Sheets
     if (GOOGLE_SHEET_URL) {
       try {
         await fetch(GOOGLE_SHEET_URL, {
@@ -110,8 +114,6 @@ export function Questionnaire({ onComplete }: QuestionnaireProps) {
       } catch (err) {
         console.error("Error sending data to Google Sheets:", err);
       }
-    } else {
-      console.log("Form Submission Payload (Google Sheet URL not configured yet):", payload);
     }
 
     setTimeout(() => {
@@ -216,49 +218,49 @@ export function Questionnaire({ onComplete }: QuestionnaireProps) {
                   onClick={() => setStep(2)}
                   className="w-full sm:w-auto px-6 py-3 rounded-xl bg-primary text-slate-950 font-bold text-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95 touch-manipulation"
                 >
-                  <span>Continue to Requirements</span>
+                  <span>Continue to Challenges</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
           )}
 
-          {/* STEP 2: Feature Selection */}
+          {/* STEP 2: Challenges Selection (Replacing Features Question) */}
           {step === 2 && (
             <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-300">
               <div className="text-center max-w-xl mx-auto space-y-1.5 sm:space-y-2">
-                <span className="inline-block px-2.5 py-0.5 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full">Requirements</span>
+                <span className="inline-block px-2.5 py-0.5 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-amber-400 bg-amber-400/10 rounded-full">Operational Challenges</span>
                 <h1 className="text-xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
-                  Which features do you need for your field team?
+                  What challenges are you currently facing with your field team?
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-400">
-                  Select all features that match your company's sales and field operations goals.
+                  Select all challenges that affect your daily sales & operations.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[50vh] sm:max-h-[360px] overflow-y-auto pr-1 custom-scrollbar -webkit-overflow-scrolling-touch">
-                {features.map((feature) => {
-                  const Icon = feature.icon;
-                  const isSelected = selectedFeatures.includes(feature.id);
+                {challenges.map((item) => {
+                  const Icon = item.icon;
+                  const isSelected = selectedChallenges.includes(item.id);
                   return (
                     <div
-                      key={feature.id}
-                      onClick={() => toggleFeature(feature.id)}
+                      key={item.id}
+                      onClick={() => toggleChallenge(item.id)}
                       className={`cursor-pointer p-3 sm:p-3.5 rounded-xl border transition-all flex items-start gap-2.5 sm:gap-3 active:scale-[0.98] touch-manipulation ${
                         isSelected 
-                          ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary/60" 
+                          ? "border-amber-400 bg-amber-400/10 shadow-xs ring-1 ring-amber-400/60" 
                           : "border-slate-800/80 bg-slate-950/40 hover:border-slate-700 hover:bg-slate-800/50"
                       }`}
                     >
-                      <div className={`p-1.5 sm:p-2 rounded-md mt-0.5 shrink-0 ${isSelected ? "bg-primary text-slate-950" : "bg-slate-800 text-slate-400"}`}>
+                      <div className={`p-1.5 sm:p-2 rounded-md mt-0.5 shrink-0 ${isSelected ? "bg-amber-400 text-slate-950" : "bg-slate-800 text-slate-400"}`}>
                         <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-xs sm:text-sm font-semibold text-white leading-tight">{feature.label}</h4>
-                        <p className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 sm:mt-1 line-clamp-2">{feature.desc}</p>
+                        <h4 className="text-xs sm:text-sm font-semibold text-white leading-tight">{item.label}</h4>
+                        <p className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 sm:mt-1 line-clamp-2">{item.desc}</p>
                       </div>
                       <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-0.5 ${
-                        isSelected ? "border-primary bg-primary text-slate-950" : "border-slate-700"
+                        isSelected ? "border-amber-400 bg-amber-400 text-slate-950" : "border-slate-700"
                       }`}>
                         {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
                       </div>
@@ -276,7 +278,7 @@ export function Questionnaire({ onComplete }: QuestionnaireProps) {
                   <span>Back</span>
                 </button>
                 <button
-                  disabled={selectedFeatures.length === 0}
+                  disabled={selectedChallenges.length === 0}
                   onClick={() => setStep(3)}
                   className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-primary text-slate-950 font-bold text-xs sm:text-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1.5 shadow-lg shadow-primary/20 active:scale-95 touch-manipulation"
                 >
@@ -287,7 +289,7 @@ export function Questionnaire({ onComplete }: QuestionnaireProps) {
             </div>
           )}
 
-          {/* STEP 3: Appointment Form */}
+          {/* STEP 3: Appointment Form (With Number of Teams / Reps Question) */}
           {step === 3 && !isSubmitted && (
             <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-300">
               <div className="text-center max-w-xl mx-auto space-y-1.5 sm:space-y-2">
@@ -353,9 +355,9 @@ export function Questionnaire({ onComplete }: QuestionnaireProps) {
                     </div>
                   </div>
 
-                  {/* Team Size */}
+                  {/* Number of Teams / Sales Reps */}
                   <div>
-                    <label className="block text-[11px] sm:text-xs font-medium text-slate-300 mb-1">Select Team Size *</label>
+                    <label className="block text-[11px] sm:text-xs font-medium text-slate-300 mb-1">Number of Teams / Sales Reps *</label>
                     <div className="relative">
                       <Users className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
                       <select
@@ -365,10 +367,11 @@ export function Questionnaire({ onComplete }: QuestionnaireProps) {
                         onChange={handleInputChange}
                         className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2.5 sm:py-2 text-base sm:text-sm text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary appearance-none"
                       >
-                        <option value="" disabled>Select Team Size</option>
-                        <option value="1-10">1 - 10 Reps</option>
-                        <option value="11-50">11 - 50 Reps</option>
-                        <option value="50+">50+ Reps</option>
+                        <option value="" disabled>Select Number of Teams / Reps</option>
+                        <option value="1-5 Reps">1 - 5 Reps (1 Team)</option>
+                        <option value="6-20 Reps">6 - 20 Reps (2-4 Teams)</option>
+                        <option value="21-50 Reps">21 - 50 Reps (5+ Teams)</option>
+                        <option value="50+ Reps">50+ Reps (Enterprise)</option>
                       </select>
                     </div>
                   </div>
