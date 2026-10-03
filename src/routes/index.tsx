@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { Questionnaire } from "../components/infield/Questionnaire";
 import { Navbar } from "../components/infield/Navbar";
 import { Hero } from "../components/infield/Hero";
 import { BenefitStrip } from "../components/infield/BenefitStrip";
@@ -18,10 +20,10 @@ import { FloatingElements } from "../components/infield/FloatingElements";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "A Fresh Start" },
-      { name: "description", content: "A simple page for a fresh start." },
-      { property: "og:title", content: "A Fresh Start" },
-      { property: "og:description", content: "A simple page for a fresh start." },
+      { title: "InField - Field Sales Software" },
+      { name: "description", content: "Field sales tracking and management software." },
+      { property: "og:title", content: "InField - Field Sales Software" },
+      { property: "og:description", content: "Field sales tracking and management software." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -30,6 +32,13 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  // Show questionnaire screen as the first screen
+  const [showWebsite, setShowWebsite] = useState(false);
+
+  if (!showWebsite) {
+    return <Questionnaire onComplete={() => setShowWebsite(true)} />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -52,4 +61,3 @@ function Index() {
     </div>
   );
 }
-

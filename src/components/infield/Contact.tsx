@@ -4,6 +4,8 @@ import { Reveal, PHONE, WA_BASE } from "./primitives";
 import { supabase } from "../../integrations/supabase/client";
 import { Phone, MessageSquare, Mail } from "lucide-react";
 
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw5TnrtQ8-lGZfOE5zl_3lPpc2-foy-vDNlTFhmnzmNg1Uf37sy8FfzchTQMmgAYHR7/exec";
+
 export function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,6 +22,23 @@ export function Contact() {
     };
 
     try {
+      // Send to Google Sheets
+      if (GOOGLE_SHEET_URL) {
+        fetch(GOOGLE_SHEET_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: data.name,
+            phone: data.phone,
+            businessName: data.company,
+            teamSize: data.team_size,
+            role: "Website Contact Form",
+            submittedAt: new Date().toISOString(),
+          }),
+        }).catch((err) => console.error("Error sending contact form to Google Sheets:", err));
+      }
+
       const { error } = await supabase.from("demo_requests").insert(data);
       if (error) throw error;
       
