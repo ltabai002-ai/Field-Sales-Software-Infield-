@@ -1,14 +1,14 @@
 export function Logo({
   className = "",
-  onDark = false, // We might not need this anymore if the image handles it, or we just leave it for API compatibility
+  onDark = false,
 }: {
   className?: string;
   onDark?: boolean;
 }) {
   return (
     <img 
-      src="/infield7-logo.png" 
-      alt="InField Logo" 
+      src="/fieldsales.webp" 
+      alt="FieldSales Logo" 
       className={`h-10 w-auto object-contain ${className}`}
     />
   );

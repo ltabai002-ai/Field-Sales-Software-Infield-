@@ -509,7 +509,7 @@ export function Questionnaire({ onComplete }: QuestionnaireProps) {
 
       {/* Footer copyright */}
       <footer className="w-full text-center py-3 text-[11px] sm:text-xs text-slate-500 z-10 shrink-0">
-        &copy; {new Date().getFullYear()} InField Software. All rights reserved.
+        &copy; {new Date().getFullYear()} InField Software. All rights reserved. &bull; Powered by infield7
       </footer>
     </div>
   );

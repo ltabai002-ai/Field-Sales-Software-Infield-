@@ -56,7 +56,7 @@ export function Footer() {
       {/* Bottom Blue Bar */}
       <div className="relative z-10 bg-secondary text-white py-4">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-medium">
-          <p>© 2026 InField Software. All Rights Reserved.</p>
+          <p>© 2026 InField Software. All Rights Reserved. • Powered by infield7</p>
           <div className="flex items-center gap-6">
             <span>{PHONE}</span>
             <a href="#contact" className="bg-brand hover:bg-brand-dark px-4 py-1.5 rounded text-white font-bold uppercase transition-colors">
