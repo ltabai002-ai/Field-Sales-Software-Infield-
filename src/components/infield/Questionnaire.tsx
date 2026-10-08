@@ -134,7 +134,7 @@ export function Questionnaire({ onComplete }: QuestionnaireProps) {
       {/* Header Bar */}
       <header className="w-full max-w-5xl mx-auto px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-20 shrink-0">
         <div className="flex items-center gap-2">
-          <Logo className="h-7 sm:h-9 w-auto brightness-0 invert" />
+          <Logo className="h-8 sm:h-10 w-auto" />
         </div>
         
         {/* Top Right Small Skip Button */}
